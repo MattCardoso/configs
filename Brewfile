@@ -1,0 +1,9 @@
+git
+zsh
+yq
+terraform
+go
+kubernetes-cli
+fzf
+thefuck
+k9s
