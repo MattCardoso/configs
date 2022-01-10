@@ -2,13 +2,15 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/home/matabc/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="obraun"
+
+# PROMPT='%{$fg[green]%}[%*]%{$reset_color%} %{$fg_no_bold[cyan]%}%n %{${fg_bold[magenta]}%}::➜ %{$reset_color%} %{${fg[green]}%}%3~ $(git_prompt_info)%{${fg_bold[$CARETCOLOR]}%}»%{${reset_color}%} '|
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -59,6 +61,8 @@ ZSH_THEME="obraun"
 # or set a custom format using the strftime function format specifications,
 # see 'man strftime' for details.
 HIST_STAMPS="yyyy-mm-dd"
+HISTSIZE=100000000
+SAVEHIST=100000000
 
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
@@ -71,21 +75,32 @@ HIST_STAMPS="yyyy-mm-dd"
 plugins=(
 	git
 	python
+	pip
 	golang
 	kubectl
+	minikube
 	docker
+	docker-compose
 	colorize
 	wd
-
+	gcloud
+	zsh-completions
+	brew
+	thefuck
+	history
+	fzf
+	zsh-interactive-cd
 )
 
 source $ZSH/oh-my-zsh.sh
+autoload -U compinit && compinit
+
 
 
 KUBE_PS1_SYMBOL_ENABLE=false
 KUBE_PS1_PREFIX='\n  <'
 KUBE_PS1_SUFFIX='> $ '
-source /home/matabc/work/ops/kube-ps1/kube-ps1.sh
+source $HOME/work/ops/kube-ps1/kube-ps1.sh
 PROMPT=$PROMPT'$(kube_ps1)'
 
 # User configuration
@@ -115,12 +130,37 @@ alias getzsh="subl ~/.zshrc"
 alias ohmyzsh="subl ~/.oh-my-zsh"
 alias cpyenv="python3 -m venv env"
 alias apyenv="source env/bin/activate"
+alias upgrade="sudo apt update && sudo apt upgrade"
 alias py="python3"
+alias gclist="gcloud config configurations list"
+alias gcldev="gcloud config configurations activate devcluster"
+alias gclprod="gcloud config configurations activate prodcluster"
+alias k9s="$HOME/work/ops/k9s/execs/k9s"
+alias docker="sudo docker"
+alias xcopy="xclip -sel clip"
+alias mongostart=""
+alias vpnu="nmcli connection up GCP_GKE"
+alias vpnd="nmcli connection down GCP_GKE"
+alias exercism="$HOME/exercism/exercism"
+
 source /etc/zsh_command_not_found
 
 
+function suscj(){kubectl patch cronjobs.batch $1 -p '{"spec": {"suspend": true}}'}
+
 export NVM_DIR="$HOME/.nvm"
+export KUBE_EDITOR="/usr/bin/subl -w"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 function addgi() { curl -sLw n https://www.toptal.com/developers/gitignore/api/$@ ;}
-PATH=$PATH:/home/matabc/work/ops/ops-scripts
+PATH=$PATH:$HOME/work/ops/ops-scripts
+# PATH=$PATH:$HOME/.istioctl/bin 
+# PATH=$PATH:$HOME/work/ops/istio-1.11.0/bin
+PATH=$PATH:$HOME/go/bin
+PATH=$PATH:$HOME/.yarn/bin
+PATH=$PATH:$HOME/.linuxbrew/bin
+# PATH=$PATH:$HOME/exercism
+# export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/bin/terraform terraform
